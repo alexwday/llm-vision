@@ -90,10 +90,17 @@ try:
             for model in json_response["data"]:
                 if "id" in model:
                     print(f"- {model['id']}")
-    except:
-        text = response.text[:200] + "..." if len(response.text) > 200 else response.text
-        print(f"Response: {text}")
-        
+    except json.JSONDecodeError:
+        # Check if the response is HTML
+        content_type = response.headers.get('Content-Type', '')
+        if 'text/html' in content_type:
+            print("Response is HTML:")
+            print(response.text)  # Print the full HTML content
+        else:
+            # Otherwise, print truncated text as before
+            text = response.text[:200] + "..." if len(response.text) > 200 else response.text
+            print(f"Response (non-JSON): {text}")
+
 except requests.exceptions.RequestException as e:
     print(f"Error: {str(e)}")
 
